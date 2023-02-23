@@ -8,6 +8,7 @@ use std::{
 
 use massa_logging::massa_trace;
 use parking_lot::RwLock;
+use crate::error::BootstrapError;
 
 use crate::tools::normalize_ip;
 
@@ -21,7 +22,7 @@ pub(crate) struct SharedWhiteBlackList<'a> {
 }
 
 impl SharedWhiteBlackList<'_> {
-    pub(crate) fn new(white_path: PathBuf, black_path: PathBuf) -> Result<Self, String> {
+    pub(crate) fn new(white_path: PathBuf, black_path: PathBuf) -> Result<Self, BootstrapError> {
         let (white_list, black_list) =
             WhiteBlackListInner::load_white_black_lists(&white_path, &black_path)?;
         Ok(Self {
@@ -36,7 +37,7 @@ impl SharedWhiteBlackList<'_> {
 
     /// Checks if the white/black list is up to date with a read-lock
     /// Creates a new list, and replaces the old one in a write-lock
-    pub(crate) fn update(&mut self) -> Result<(), String> {
+    pub(crate) fn update(&mut self) -> Result<(), BootstrapError> {
         let read_lock = self.inner.read();
         let (new_white, new_black) =
             WhiteBlackListInner::load_white_black_lists(&self.white_path, &self.black_path)?;
@@ -86,19 +87,17 @@ impl WhiteBlackListInner {
     fn load_white_black_lists(
         whitelist_path: &Path,
         blacklist_path: &Path,
-    ) -> Result<(Option<HashSet<IpAddr>>, Option<HashSet<IpAddr>>), String> {
+    ) -> Result<(Option<HashSet<IpAddr>>, Option<HashSet<IpAddr>>), BootstrapError> {
         let white_list = Self::load_list(whitelist_path)?;
         let black_list = Self::load_list(blacklist_path)?;
         Ok((white_list, black_list))
     }
 
-    fn load_list(list_path: &Path) -> Result<Option<HashSet<IpAddr>>, String> {
-        let Ok(list) = std::fs::read_to_string(list_path) else {
-            return Ok(None);
-        };
+    fn load_list(list_path: &Path) -> Result<Option<HashSet<IpAddr>>, BootstrapError> {
+        let list = std::fs::read_to_string(list_path).map_err(|e| BootstrapError::InitListError(e.to_string()))?;
         let res = Some(
             serde_json::from_str::<HashSet<IpAddr>>(list.as_str())
-                .map_err(|_| String::from("Failed to parse bootstrap whitelist"))?
+                .map_err(|e| BootstrapError::InitListError(format!("Failed to parse bootstrap whitelist : {}",e.to_string())))?
                 .into_iter()
                 .map(normalize_ip)
                 .collect(),

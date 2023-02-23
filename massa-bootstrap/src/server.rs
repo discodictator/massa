@@ -64,7 +64,7 @@ use crate::{
 type BsConn = (Duplex, SocketAddr);
 /// handle on the bootstrap server
 pub struct BootstrapManager {
-    update_handle: tokio::task::JoinHandle<Result<(), String>>,
+    update_handle: tokio::task::JoinHandle<Result<(), BootstrapError>>,
     listen_handle: tokio::task::JoinHandle<Result<Result<(), BsConn>, Box<BootstrapError>>>,
     main_handle: std::thread::JoinHandle<Result<(), Box<BootstrapError>>>,
     stopper_tx: crossbeam::channel::Sender<()>,
@@ -116,8 +116,7 @@ pub async fn start_bootstrap_server(
     let white_black_list = SharedWhiteBlackList::new(
         config.bootstrap_whitelist_path.clone(),
         config.bootstrap_blacklist_path.clone(),
-    )
-    .map_err(BootstrapError::GeneralError)?;
+    )?;
 
     let update_handle = outer_server_runtime
         .handle()
@@ -176,7 +175,7 @@ impl BootstrapServer<'_> {
     async fn run_updater(
         mut list: SharedWhiteBlackList<'_>,
         interval: Duration,
-    ) -> Result<(), String> {
+    ) -> Result<(), BootstrapError> {
         let mut interval = tokio::time::interval(interval);
         loop {
             interval.tick().await;

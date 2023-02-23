@@ -52,4 +52,6 @@ pub enum BootstrapError {
     ReceivedError(String),
     /// clock error: {0}
     ClockError(String),
+    /// fail to init the list from file : {0}
+    InitListError(String)
 }
