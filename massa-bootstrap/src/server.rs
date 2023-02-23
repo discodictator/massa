@@ -233,7 +233,7 @@ impl BootstrapServer<'_> {
             if let Err(error_msg) = self.white_black_list.is_ip_allowed(&remote_addr) {
                 server.close_and_send_error(
                     self.outer_server_runtime.handle().clone(),
-                    error_msg,
+                    error_msg.to_string(),
                     remote_addr,
                     move || {},
                 );

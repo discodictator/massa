@@ -61,7 +61,7 @@ impl SharedWhiteBlackList<'_> {
     }
 
     #[cfg_attr(test, allow(unreachable_code, unused_variables))]
-    pub(crate) fn is_ip_allowed(&self, remote_addr: &SocketAddr) -> Result<(), String> {
+    pub(crate) fn is_ip_allowed(&self, remote_addr: &SocketAddr) -> Result<(), BootstrapError> {
         #[cfg(test)]
         return Ok(());
 
@@ -70,11 +70,11 @@ impl SharedWhiteBlackList<'_> {
         let read = self.inner.read();
         if let Some(ip_list) = &read.black_list && ip_list.contains(&ip) {
             massa_trace!("bootstrap.lib.run.select.accept.refuse_blacklisted", {"remote_addr": remote_addr});
-            Err(format!("IP {} is blacklisted", &ip))
+            Err(BootstrapError::BlackListed(ip.to_string()))
             // whether the peer IP address is not present in the whitelist
         } else if let Some(ip_list) = &read.white_list && !ip_list.contains(&ip){
             massa_trace!("bootstrap.lib.run.select.accept.refuse_not_whitelisted", {"remote_addr": remote_addr});
-            Err(format!("A whitelist exists and the IP {} is not whitelisted", &ip))
+            Err(BootstrapError::WhiteListed(ip.to_string()))
         } else {
             Ok(())
         }
