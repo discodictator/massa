@@ -10,6 +10,7 @@ use massa_serialization::{
     Deserializer, OptionDeserializer, OptionSerializer, SerializeError, Serializer,
     U64VarIntDeserializer, U64VarIntSerializer,
 };
+use massa_signature::KeyPair;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -242,7 +243,9 @@ fn test_cycle_info_hash_computation() {
         BitVec::default(),
         PreHashMap::default(),
     );
-    let addr = Address::from_prefixed_bytes(&[0; 33].as_slice()).unwrap();
+    
+    let keypair = KeyPair::generate(0).unwrap();
+    let addr = Address::from_public_key(&keypair.get_public_key());
 
     // add changes
     let mut roll_changes = PreHashMap::default();

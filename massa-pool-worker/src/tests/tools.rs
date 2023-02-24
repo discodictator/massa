@@ -125,7 +125,7 @@ where
 
 /// Creates an endorsement for use in pool tests.
 pub fn _create_endorsement(slot: Slot) -> SecureShareEndorsement {
-    let sender_keypair = KeyPair::generate();
+    let sender_keypair = KeyPair::generate(0).unwrap();
 
     let content = Endorsement {
         slot,

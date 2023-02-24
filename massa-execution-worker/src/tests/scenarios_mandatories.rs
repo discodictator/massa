@@ -127,7 +127,7 @@ mod tests {
         storage: &Storage,
         execution_controller: Box<dyn ExecutionController>,
     ) {
-        let genesis_keypair = KeyPair::generate();
+        let genesis_keypair = KeyPair::generate(0).unwrap();
         let mut finalized_blocks: HashMap<Slot, BlockId> = HashMap::new();
         let mut block_storage: PreHashMap<BlockId, Storage> = PreHashMap::default();
         for thread in 0..config.thread_count {
