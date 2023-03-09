@@ -10,6 +10,8 @@ machine = { git = "https://github.com/antifuchs/machine", branch="fix-workspace-
 parking_lot = "0.12"
 thiserror = "1.0"
 num_enum = "0.5"
+tokio = { version = "1.23", features = ["full"] }
+tracing = "0.1"
 
 # custom module
 massa_time = { path = "../massa-time" }
