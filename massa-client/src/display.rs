@@ -47,6 +47,7 @@ macro_rules! client_warning {
     };
 }
 
+#[derive(Debug)]
 pub enum Style {
     /// Any information that identifies an element
     Id,
@@ -79,7 +80,7 @@ pub enum Style {
 }
 
 impl Style {
-    fn style<T: ToString>(&self, msg: T) -> console::StyledObject<std::string::String> {
+    pub fn style<T: ToString>(&self, msg: T) -> console::StyledObject<std::string::String> {
         style(msg.to_string()).color256(match self {
             Style::Id => 218,        // #ffafd7
             Style::Pending => 172,   // #d78700

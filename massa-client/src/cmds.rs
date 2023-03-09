@@ -658,6 +658,28 @@ impl Command {
             }
 
             Command::wallet_info => {
+                use crate::display::Style;
+                for var in [
+                    Style::Id,
+                    Style::Pending,
+                    Style::Finished,
+                    Style::Good,
+                    Style::Bad,
+                    Style::Unknown,
+                    Style::Coins,
+                    Style::Protocol,
+                    Style::Block,
+                    Style::Signature,
+                    Style::Wallet,
+                    Style::Secret,
+                    Style::Separator,
+                    Style::Time,
+                ].iter() {
+                    println!("{}", var.style(format!("{:?}", var)));
+                }
+
+                panic!();
+
                 let show_keys = parameters.len() == 1 && parameters[0] == "show-all-keys";
 
                 let wallet = wallet_opt.as_mut().unwrap();
