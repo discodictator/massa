@@ -42,6 +42,7 @@
 
 pub mod versioning;
 pub mod versioning_factory;
+pub mod versioning_middleware;
 
 /// Test utils
 #[cfg(feature = "testing")]

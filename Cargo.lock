@@ -3001,6 +3001,7 @@ dependencies = [
  "num_enum",
  "parking_lot",
  "thiserror",
+ "tokio",
 ]
 
 [[package]]
