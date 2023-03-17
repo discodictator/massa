@@ -91,7 +91,6 @@ impl BSEstablisher for DefaultEstablisher {
         let socket = socket2::Socket::new(socket2::Domain::IPV6, socket2::Type::STREAM, None)?;
 
         socket.set_only_v6(false)?;
-        socket.set_nonblocking(true)?;
         socket.bind(&addr.into())?;
 
         // Number of connections to queue, set to the hardcoded value used by tokio
